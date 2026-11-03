@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="David Gerbing" />
+
+
+<title>1. Data: Utilities</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">1. Data: Utilities</h1>
+<h4 class="author">David Gerbing</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#recode-data-values" id="toc-recode-data-values">Recode
+Data Values</a>
+<ul>
+<li><a href="#examples" id="toc-examples">Examples</a></li>
+<li><a href="#missing-data" id="toc-missing-data">Missing Data</a></li>
+</ul></li>
+<li><a href="#sort-rows-of-data" id="toc-sort-rows-of-data">Sort Rows of
+Data</a></li>
+<li><a href="#rescale-data" id="toc-rescale-data">Rescale Data</a></li>
+<li><a href="#rename-a-variable-in-a-data-frame" id="toc-rename-a-variable-in-a-data-frame">Rename a Variable in a Data
+Frame</a></li>
+<li><a href="#create-factor-variables" id="toc-create-factor-variables">Create Factor Variables</a></li>
+<li><a href="#reshape-data" id="toc-reshape-data">Reshape Data</a>
+<ul>
+<li><a href="#reshape-data-wide-to-long" id="toc-reshape-data-wide-to-long">Reshape Data Wide to Long</a></li>
+<li><a href="#reshape-data-long-to-wide" id="toc-reshape-data-long-to-wide">Reshape Data Long to Wide</a></li>
+<li><a href="#create-training-and-testing-data" id="toc-create-training-and-testing-data">Create Training and Testing
+Data</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(<span class="st">&quot;lessR&quot;</span>)</span></code></pre></div>
+<div id="recode-data-values" class="section level2">
+<h2>Recode Data Values</h2>
+<p>Data transformations for continuous variables are straightforward,
+just enter the arithmetic expression for the transformation. For each
+variable identify the corresponding data frame that contains the
+variable if there is one. For example, the following creates a new
+variable <em>xsq</em> that is the square of the values of a variable
+<em>x</em> in the <em>d</em> data frame.</p>
+<pre><code>d$xsq &lt;- d$x^2</code></pre>
+<p>Or, use the base R <code>transform()</code> function to accomplish
+the same, plus other functions from other packages that accomplish the
+same result.</p>
+<p>For variables that define discrete categories, however, the
+transformation may not be so straightforward with base R functions such
+as a nested string of <code>ifelse()</code> functions. An alternative is
+the <strong>lessR</strong> function <code>recode()</code>.</p>
+<p>To use <code>recode()</code>, specify the variable to be recoded with
+the <code>old_vars</code> parameter, the first parameter in the function
+call. Specify values to be recoded with the required <code>old</code>
+parameter. Specify the corresponding recoded values with the required
+<code>new</code> parameter. There must be a 1-to-1 correspondence
+between the two sets of values, such as 0:5 recoded to 5:0, six items in
+the <code>old</code> set and six items in the <code>new</code> set.</p>
+<div id="examples" class="section level3">
+<h3>Examples</h3>
+<p>To illustrate, construct the following small data frame.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">read.table</span>(<span class="at">text=</span><span class="st">&quot;Severity Description</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="st">1 Mild</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="st">4 Moderate</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="st">3 Moderate</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="st">2 Mild</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="st">1 Severe&quot;</span>, <span class="at">header=</span><span class="cn">TRUE</span>, <span class="at">stringsAsFactors=</span><span class="cn">FALSE</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##   Severity Description
+## 1        1        Mild
+## 2        4    Moderate
+## 3        3    Moderate
+## 4        2        Mild
+## 5        1      Severe</code></pre>
+<p>Now change the integer values of the variable <em>Severity</em> from
+1 through 4 to 10 through 40. Because the parameter
+<code>old_vars</code> is the first parameter in the definition of
+<code>recode()</code>, and because it is listed first, the parameter
+name need not be specified. The default data frame is <em>d</em>,
+otherwise specify with the <code>data</code> parameter.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">recode</span>(Severity, <span class="at">old=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">new=</span><span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">40</span>))</span></code></pre></div>
+<pre><code>## 
+## --------------------------------------------------------
+## First four rows of data to recode for data frame: d 
+## --------------------------------------------------------
+##   Severity
+## 1        1
+## 2        4
+## 3        3
+## 4        2
+## 
+## 
+## Recoding Specification
+## ----------------------
+##    1 --&gt; 10 
+##    2 --&gt; 20 
+##    3 --&gt; 30 
+##    4 --&gt; 40 
+## 
+## Number of cases (rows) to recode: 5 
+## 
+## Replace existing values of each specified variable, no value for option: new_vars
+## 
+## ---  Recode: Severity ---------------------------------
+## Number of unique values of Severity in the data: 4 
+## Number of values of Severity to recode: 4 
+## 
+## 
+## ------------------------------------------------
+## First four rows of recoded data
+## ------------------------------------------------
+##   Severity
+## 1       10
+## 2       40
+## 3       30
+## 4       20</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##   Severity Description
+## 1       10        Mild
+## 2       40    Moderate
+## 3       30    Moderate
+## 4       20        Mild
+## 5       10      Severe</code></pre>
+<p>In the previous example, the values of the variable were overwritten
+with the new values. In the following example, instead write the recoded
+values to a new variable with the <code>new_vars</code> parameter, here
+<em>SevereNew</em>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">recode</span>(Severity, <span class="at">new_vars=</span><span class="st">&quot;SevereNew&quot;</span>, <span class="at">old=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">new=</span><span class="fu">c</span>(<span class="dv">10</span>,<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">40</span>))</span></code></pre></div>
+<pre><code>## 
+## --------------------------------------------------------
+## First four rows of data to recode for data frame: d 
+## --------------------------------------------------------
+##   Severity
+## 1       10
+## 2       40
+## 3       30
+## 4       20
+## 
+## 
+## Recoding Specification
+## ----------------------
+##    1 --&gt; 10 
+##    2 --&gt; 20 
+##    3 --&gt; 30 
+##    4 --&gt; 40 
+## 
+## Number of cases (rows) to recode: 5 
+## 
+## ---  Recode: Severity ---------------------------------
+## Number of unique values of Severity in the data: 4 
+## &gt;&gt;&gt; Note: A value specified to recode, 1, is not in the data.
+## 
+## &gt;&gt;&gt; Note: A value specified to recode, 2, is not in the data.
+## 
+## &gt;&gt;&gt; Note: A value specified to recode, 3, is not in the data.
+## 
+## &gt;&gt;&gt; Note: A value specified to recode, 4, is not in the data.
+## 
+## Number of values of Severity to recode: 4 
+## Recode to variable: SevereNew 
+## 
+## 
+## ------------------------------------------------
+## First four rows of recoded data
+## ------------------------------------------------
+##   Severity SevereNew
+## 1       10        10
+## 2       40        40
+## 3       30        30
+## 4       20        20</code></pre>
+<p>A convenient application of <code>recode()</code> is to Likert data,
+with responses scored to items on a survey such as from 0 for Strongly
+Disagree to 5 for Strongly Agree. To encourage responders to carefully
+read the items, some items are written in the opposite direction so that
+disagreement indicates agreement with the overall attitude being
+assessed.</p>
+<p>As an example, reverse score Items m01, m02, m03, and m10 from survey
+responses to the 20-item Mach IV scale. That is, score a 0 as a 5 and so
+forth. The responses are included as part of <strong>lessR</strong> and
+so can be directly read.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">Read</span>(<span class="st">&quot;Mach4&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## &gt;&gt;&gt; Suggestions
+## Recommended binary format for data files: feather
+##   Create with Write(d, &quot;your_file&quot;, format=&quot;feather&quot;)
+## More details about your data, Enter:  details()  for d, or  details(name)
+## 
+## Data Types
+## ------------------------------------------------------------
+## integer: Numeric data values, integers only
+## ------------------------------------------------------------
+## 
+##     Variable                  Missing  Unique 
+##         Name     Type  Values  Values  Values   First and last values
+## ------------------------------------------------------------------------------------------
+##  1    Gender   integer    351       0       2   0  0  1 ... 0  0  1
+##  2       m01   integer    351       0       6   0  0  2 ... 2  1  3
+##  3       m02   integer    351       0       6   4  1  1 ... 3  4  3
+##  4       m03   integer    351       0       6   1  4  0 ... 3  4  3
+##  5       m04   integer    351       0       6   5  4  5 ... 3  4  4
+##  6       m05   integer    351       0       6   0  0  4 ... 2  3  3
+##  7       m06   integer    351       0       6   5  3  4 ... 4  4  2
+##  8       m07   integer    351       0       6   4  3  0 ... 4  4  2
+##  9       m08   integer    351       0       6   1  0  5 ... 3  2  3
+## 10       m09   integer    351       0       6   5  4  3 ... 3  3  3
+## 11       m10   integer    351       0       6   4  4  4 ... 3  4  3
+## 12       m11   integer    351       0       6   0  0  1 ... 1  1  2
+## 13       m12   integer    351       0       6   0  1  4 ... 2  1  3
+## 14       m13   integer    351       0       6   0  1  0 ... 3  1  2
+## 15       m14   integer    351       0       6   0  1  0 ... 2  2  2
+## 16       m15   integer    351       0       6   4  2  2 ... 3  5  3
+## 17       m16   integer    351       0       6   0  4  0 ... 0  2  5
+## 18       m17   integer    351       0       6   1  4  2 ... 0  2  2
+## 19       m18   integer    351       0       6   3  3  4 ... 4  4  3
+## 20       m19   integer    351       0       6   2  1  0 ... 0  0  1
+## 21       m20   integer    351       0       6   4  0  1 ... 1  0  3
+## ------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">recode</span>(<span class="fu">c</span>(m01<span class="sc">:</span>m03,m10), <span class="at">old=</span><span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">new=</span><span class="dv">5</span><span class="sc">:</span><span class="dv">0</span>)</span></code></pre></div>
+<pre><code>## 
+## --------------------------------------------------------
+## First four rows of data to recode for data frame: d 
+## --------------------------------------------------------
+##   m01 m02 m03 m10
+## 1   0   4   1   4
+## 2   0   1   4   4
+## 3   2   1   0   4
+## 4   0   5   2   2
+## 
+## 
+## Recoding Specification
+## ----------------------
+##    0 --&gt; 5 
+##    1 --&gt; 4 
+##    2 --&gt; 3 
+##    3 --&gt; 2 
+##    4 --&gt; 1 
+##    5 --&gt; 0 
+## 
+## Number of cases (rows) to recode: 351 
+## 
+## Replace existing values of each specified variable, no value for option: new_vars
+## 
+## ---  Recode: m01 ---------------------------------
+## Number of unique values of m01 in the data: 6 
+## Number of values of m01 to recode: 6 
+## 
+## ---  Recode: m02 ---------------------------------
+## Number of unique values of m02 in the data: 6 
+## Number of values of m02 to recode: 6 
+## 
+## ---  Recode: m03 ---------------------------------
+## Number of unique values of m03 in the data: 6 
+## Number of values of m03 to recode: 6 
+## 
+## ---  Recode: m10 ---------------------------------
+## Number of unique values of m10 in the data: 6 
+## Number of values of m10 to recode: 6 
+## 
+## 
+## ------------------------------------------------
+## First four rows of recoded data
+## ------------------------------------------------
+##   m01 m02 m03 m10
+## 1   5   1   4   1
+## 2   5   4   1   1
+## 3   3   4   5   1
+## 4   5   0   3   3</code></pre>
+</div>
+<div id="missing-data" class="section level3">
+<h3>Missing Data</h3>
+<p>The function also addresses missing data. Existing data values can be
+converted to an R missing value. In this example, all values of 1 for
+the variable <em>Plan</em> are considered missing.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">Read</span>(<span class="st">&quot;Employee&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## &gt;&gt;&gt; Suggestions
+## Recommended binary format for data files: feather
+##   Create with Write(d, &quot;your_file&quot;, format=&quot;feather&quot;)
+## More details about your data, Enter:  details()  for d, or  details(name)
+## 
+## Data Types
+## ------------------------------------------------------------
+## character: Non-numeric data values
+## integer: Numeric data values, integers only
+## double: Numeric data values with decimal digits
+## ------------------------------------------------------------
+## 
+##     Variable                  Missing  Unique 
+##         Name     Type  Values  Values  Values   First and last values
+## ------------------------------------------------------------------------------------------
+##  1      Name character     37       0      37   Ritchie, Darnell ... Cassinelli, Anastis
+##  2     Years   integer     36       1      16   7  NA  7 ... 1  2  10
+##  3    Gender character     37       0       2   M  M  W ... W  W  M
+##  4      Dept character     36       1       5   ADMN  SALE  FINC ... MKTG  SALE  FINC
+##  5    Salary    double     37       0      37   63788.26  104494.58 ... 66508.32  67562.36
+##  6    JobSat character     35       2       3   med  low  high ... high  low  high
+##  7      Plan   integer     37       0       3   1  1  2 ... 2  2  1
+##  8       Pre   integer     37       0      27   82  62  90 ... 83  59  80
+##  9      Post   integer     37       0      22   92  74  86 ... 90  71  87
+## ------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>newdata <span class="ot">&lt;-</span> <span class="fu">recode</span>(Plan, <span class="at">old=</span><span class="dv">1</span>, <span class="at">new=</span><span class="st">&quot;missing&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## --------------------------------------------------------
+## First four rows of data to recode for data frame: d 
+## --------------------------------------------------------
+##   Plan
+## 1    1
+## 2    1
+## 3    2
+## 4    3
+## 
+## 
+## Recoding Specification
+## ----------------------
+##    1 --&gt; missing 
+## 
+## 
+## R represents missing data with a NA for &#39;not assigned&#39;.
+## 
+## Number of cases (rows) to recode: 37 
+## 
+## Replace existing values of each specified variable, no value for option: new_vars
+## 
+## ---  Recode: Plan ---------------------------------
+## Number of unique values of Plan in the data: 3 
+## Number of values of Plan to recode: 1 
+## 
+## 
+## ------------------------------------------------
+## First four rows of recoded data
+## ------------------------------------------------
+##   Plan
+## 1   NA
+## 2   NA
+## 3    2
+## 4    3</code></pre>
+<p>Now values of 1 for <em>Plan</em> are missing, having the value of
+<code>NA</code> for not available, as shown by listing the first six
+rows of data with the base R function <code>head()</code>.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">head</span>(d)</span></code></pre></div>
+<pre><code>##               Name Years Gender Dept    Salary JobSat Plan Pre Post
+## 1 Ritchie, Darnell     7      M ADMN  63788.26    med    1  82   92
+## 2        Wu, James    NA      M SALE 104494.58    low    1  62   74
+## 3   Downs, Deborah     7      W FINC  67139.90   high    2  90   86
+## 4      Hoang, Binh    15      M SALE 121074.86    low    3  96   97
+## 5    Jones, Alissa     5      W &lt;NA&gt;  63772.58   &lt;NA&gt;    1  65   62
+## 6   Afshari, Anbar     6      W ADMN  79441.93   high    2 100  100</code></pre>
+<p>The procedure can be reversed in which values that are missing
+according to the R code <code>NA</code> are converted to non-missing
+values. To illustrate with the <em>Employee</em> data set, examine the
+first six rows of data. The value of <code>Years</code> is missing in
+the second row of data.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">Read</span>(<span class="st">&quot;Employee&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## &gt;&gt;&gt; Suggestions
+## Recommended binary format for data files: feather
+##   Create with Write(d, &quot;your_file&quot;, format=&quot;feather&quot;)
+## More details about your data, Enter:  details()  for d, or  details(name)
+## 
+## Data Types
+## ------------------------------------------------------------
+## character: Non-numeric data values
+## integer: Numeric data values, integers only
+## double: Numeric data values with decimal digits
+## ------------------------------------------------------------
+## 
+##     Variable                  Missing  Unique 
+##         Name     Type  Values  Values  Values   First and last values
+## ------------------------------------------------------------------------------------------
+##  1      Name character     37       0      37   Ritchie, Darnell ... Cassinelli, Anastis
+##  2     Years   integer     36       1      16   7  NA  7 ... 1  2  10
+##  3    Gender character     37       0       2   M  M  W ... W  W  M
+##  4      Dept character     36       1       5   ADMN  SALE  FINC ... MKTG  SALE  FINC
+##  5    Salary    double     37       0      37   63788.26  104494.58 ... 66508.32  67562.36
+##  6    JobSat character     35       2       3   med  low  high ... high  low  high
+##  7      Plan   integer     37       0       3   1  1  2 ... 2  2  1
+##  8       Pre   integer     37       0      27   82  62  90 ... 83  59  80
+##  9      Post   integer     37       0      22   92  74  86 ... 90  71  87
+## ------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">head</span>(d)</span></code></pre></div>
+<pre><code>##               Name Years Gender Dept    Salary JobSat Plan Pre Post
+## 1 Ritchie, Darnell     7      M ADMN  63788.26    med    1  82   92
+## 2        Wu, James    NA      M SALE 104494.58    low    1  62   74
+## 3   Downs, Deborah     7      W FINC  67139.90   high    2  90   86
+## 4      Hoang, Binh    15      M SALE 121074.86    low    3  96   97
+## 5    Jones, Alissa     5      W &lt;NA&gt;  63772.58   &lt;NA&gt;    1  65   62
+## 6   Afshari, Anbar     6      W ADMN  79441.93   high    2 100  100</code></pre>
+<p>Here convert all missing data values for the variables <em>Years</em>
+and <em>Salary</em> to the value of 99.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">recode</span>(<span class="fu">c</span>(Years, Salary), <span class="at">old=</span><span class="st">&quot;missing&quot;</span>, <span class="at">new=</span><span class="dv">99</span>)</span></code></pre></div>
+<pre><code>## 
+## --------------------------------------------------------
+## First four rows of data to recode for data frame: d 
+## --------------------------------------------------------
+##   Years    Salary
+## 1     7  63788.26
+## 2    NA 104494.58
+## 3     7  67139.90
+## 4    15 121074.86
+## 
+## 
+## Recoding Specification
+## ----------------------
+##    missing --&gt; 99 
+## 
+## Number of cases (rows) to recode: 37 
+## 
+## Replace existing values of each specified variable, no value for option: new_vars
+## 
+## ---  Recode: Years ---------------------------------
+## Number of unique values of Years in the data: 16 
+## &gt;&gt;&gt; Note: A value specified to recode, missing, is not in the data.
+## 
+## Number of values of Years to recode: 1 
+## 
+## ---  Recode: Salary ---------------------------------
+## Unique values of Salary in the data: 56124.97 59188.96 59704.79 59868.68 61036.85 63772.58 63788.26 65545.25 66508.32 66772.95 67139.9 67562.36 71055.44 71356.69 71961.29 76312.89 76337.83 79441.93 79547.6 79624.87 81084.02 82321.36 82502.5 82675.26 87714.85 91871.05 93014.43 97785.51 101352.3 102681.2 104494.6 105027.6 109062.7 118138.4 121074.9 132563.4 144419.2 
+## Number of unique values of Salary in the data: 37 
+## &gt;&gt;&gt; Note: A value specified to recode, missing, is not in the data.
+## 
+## Number of values of Salary to recode: 1 
+## 
+## 
+## ------------------------------------------------
+## First four rows of recoded data
+## ------------------------------------------------
+##   Years    Salary
+## 1     7  63788.26
+## 2    99 104494.58
+## 3     7  67139.90
+## 4    15 121074.86</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">head</span>(d)</span></code></pre></div>
+<pre><code>##               Name Years Gender Dept    Salary JobSat Plan Pre Post
+## 1 Ritchie, Darnell     7      M ADMN  63788.26    med    1  82   92
+## 2        Wu, James    99      M SALE 104494.58    low    1  62   74
+## 3   Downs, Deborah     7      W FINC  67139.90   high    2  90   86
+## 4      Hoang, Binh    15      M SALE 121074.86    low    3  96   97
+## 5    Jones, Alissa     5      W &lt;NA&gt;  63772.58   &lt;NA&gt;    1  65   62
+## 6   Afshari, Anbar     6      W ADMN  79441.93   high    2 100  100</code></pre>
+<p>Now the value of <em>Years</em> in the second row of data is 99.</p>
+</div>
+</div>
+<div id="sort-rows-of-data" class="section level2">
+<h2>Sort Rows of Data</h2>
+<p>Sorts the values of a data frame according to the values of one or
+more variables contained in the data frame, or the row names. Variable
+types include numeric and factor variables. Factors are sorted by the
+ordering of their values, which, by default is alphabetical. Sorting by
+row names is also possible.</p>
+<p>To illustrate, use the <strong>lessR</strong> <em>Employee</em> data
+set, here just the first 12 rows of data to save space.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">Read</span>(<span class="st">&quot;Employee&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## &gt;&gt;&gt; Suggestions
+## Recommended binary format for data files: feather
+##   Create with Write(d, &quot;your_file&quot;, format=&quot;feather&quot;)
+## More details about your data, Enter:  details()  for d, or  details(name)
+## 
+## Data Types
+## ------------------------------------------------------------
+## character: Non-numeric data values
+## integer: Numeric data values, integers only
+## double: Numeric data values with decimal digits
+## ------------------------------------------------------------
+## 
+##     Variable                  Missing  Unique 
+##         Name     Type  Values  Values  Values   First and last values
+## ------------------------------------------------------------------------------------------
+##  1      Name character     37       0      37   Ritchie, Darnell ... Cassinelli, Anastis
+##  2     Years   integer     36       1      16   7  NA  7 ... 1  2  10
+##  3    Gender character     37       0       2   M  M  W ... W  W  M
+##  4      Dept character     36       1       5   ADMN  SALE  FINC ... MKTG  SALE  FINC
+##  5    Salary    double     37       0      37   63788.26  104494.58 ... 66508.32  67562.36
+##  6    JobSat character     35       2       3   med  low  high ... high  low  high
+##  7      Plan   integer     37       0       3   1  1  2 ... 2  2  1
+##  8       Pre   integer     37       0      27   82  62  90 ... 83  59  80
+##  9      Post   integer     37       0      22   92  74  86 ... 90  71  87
+## ------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> d[<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,]</span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">order_by</span>(d, Gender)</span></code></pre></div>
+<pre><code>## 
+## Sort Specification
+##   Gender --&gt; ascending</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##                Name Years Gender Dept    Salary JobSat Plan Pre Post
+## 1  Ritchie, Darnell     7      M ADMN  63788.26    med    1  82   92
+## 2         Wu, James    NA      M SALE 104494.58    low    1  62   74
+## 4       Hoang, Binh    15      M SALE 121074.86    low    3  96   97
+## 7     Knox, Michael    18      M MKTG 109062.66    med    3  81   84
+## 8  Campagna, Justin     8      M SALE  82321.36    low    1  76   84
+## 12      Pham, Scott    13      M SALE  91871.05   high    2  90   94
+## 3    Downs, Deborah     7      W FINC  67139.90   high    2  90   86
+## 5     Jones, Alissa     5      W &lt;NA&gt;  63772.58   &lt;NA&gt;    1  65   62
+## 6    Afshari, Anbar     6      W ADMN  79441.93   high    2 100  100
+## 9   Kimball, Claire     8      W MKTG  71356.69   high    2  93   92
+## 10  Cooper, Lindsay     4      W MKTG  66772.95   high    1  78   91
+## 11 Saechao, Suzanne     8      W SALE  65545.25    med    1  98  100</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">order_by</span>(d, <span class="fu">c</span>(Gender, Salary), <span class="at">direction=</span><span class="fu">c</span>(<span class="st">&quot;+&quot;</span>, <span class="st">&quot;-&quot;</span>))</span></code></pre></div>
+<pre><code>## 
+## Sort Specification
+##   Gender --&gt; ascending 
+##   Salary --&gt; descending</code></pre>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##                Name Years Gender Dept    Salary JobSat Plan Pre Post
+## 4       Hoang, Binh    15      M SALE 121074.86    low    3  96   97
+## 7     Knox, Michael    18      M MKTG 109062.66    med    3  81   84
+## 2         Wu, James    NA      M SALE 104494.58    low    1  62   74
+## 12      Pham, Scott    13      M SALE  91871.05   high    2  90   94
+## 8  Campagna, Justin     8      M SALE  82321.36    low    1  76   84
+## 1  Ritchie, Darnell     7      M ADMN  63788.26    med    1  82   92
+## 6    Afshari, Anbar     6      W ADMN  79441.93   high    2 100  100
+## 9   Kimball, Claire     8      W MKTG  71356.69   high    2  93   92
+## 3    Downs, Deborah     7      W FINC  67139.90   high    2  90   86
+## 10  Cooper, Lindsay     4      W MKTG  66772.95   high    1  78   91
+## 11 Saechao, Suzanne     8      W SALE  65545.25    med    1  98  100
+## 5     Jones, Alissa     5      W &lt;NA&gt;  63772.58   &lt;NA&gt;    1  65   62</code></pre>
+<p>Sort by row names in ascending order.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">order_by</span>(d, row.names)</span></code></pre></div>
+<pre><code>## 
+## Sort Specification
+##   row.names --&gt; ascending</code></pre>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##                Name Years Gender Dept    Salary JobSat Plan Pre Post
+## 1  Ritchie, Darnell     7      M ADMN  63788.26    med    1  82   92
+## 10  Cooper, Lindsay     4      W MKTG  66772.95   high    1  78   91
+## 11 Saechao, Suzanne     8      W SALE  65545.25    med    1  98  100
+## 12      Pham, Scott    13      M SALE  91871.05   high    2  90   94
+## 2         Wu, James    NA      M SALE 104494.58    low    1  62   74
+## 3    Downs, Deborah     7      W FINC  67139.90   high    2  90   86
+## 4       Hoang, Binh    15      M SALE 121074.86    low    3  96   97
+## 5     Jones, Alissa     5      W &lt;NA&gt;  63772.58   &lt;NA&gt;    1  65   62
+## 6    Afshari, Anbar     6      W ADMN  79441.93   high    2 100  100
+## 7     Knox, Michael    18      M MKTG 109062.66    med    3  81   84
+## 8  Campagna, Justin     8      M SALE  82321.36    low    1  76   84
+## 9   Kimball, Claire     8      W MKTG  71356.69   high    2  93   92</code></pre>
+<p>Randomize the order of the data values.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">order_by</span>(d, random)</span></code></pre></div>
+<pre><code>## 
+## Sort Specification
+##   random</code></pre>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##                Name Years Gender Dept    Salary JobSat Plan Pre Post
+## 5     Jones, Alissa     5      W &lt;NA&gt;  63772.58   &lt;NA&gt;    1  65   62
+## 12      Pham, Scott    13      M SALE  91871.05   high    2  90   94
+## 10  Cooper, Lindsay     4      W MKTG  66772.95   high    1  78   91
+## 2         Wu, James    NA      M SALE 104494.58    low    1  62   74
+## 11 Saechao, Suzanne     8      W SALE  65545.25    med    1  98  100
+## 1  Ritchie, Darnell     7      M ADMN  63788.26    med    1  82   92
+## 8  Campagna, Justin     8      M SALE  82321.36    low    1  76   84
+## 7     Knox, Michael    18      M MKTG 109062.66    med    3  81   84
+## 6    Afshari, Anbar     6      W ADMN  79441.93   high    2 100  100
+## 4       Hoang, Binh    15      M SALE 121074.86    low    3  96   97
+## 9   Kimball, Claire     8      W MKTG  71356.69   high    2  93   92
+## 3    Downs, Deborah     7      W FINC  67139.90   high    2  90   86</code></pre>
+</div>
+<div id="rescale-data" class="section level2">
+<h2>Rescale Data</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="fu">rescale</span>(Salary)</span></code></pre></div>
+<pre><code>##  [1] -0.926  0.484 -0.775  1.118 -0.837 -0.925  0.005  1.347 -0.139  1.950
+## [11] -0.545 -0.757</code></pre>
+</div>
+<div id="rename-a-variable-in-a-data-frame" class="section level2">
+<h2>Rename a Variable in a Data Frame</h2>
+<p>List the name of the data frame, the existing variable name, and the
+new name, in that order.</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="fu">names</span>(d)</span></code></pre></div>
+<pre><code>## [1] &quot;Name&quot;   &quot;Years&quot;  &quot;Gender&quot; &quot;Dept&quot;   &quot;Salary&quot; &quot;JobSat&quot; &quot;Plan&quot;   &quot;Pre&quot;   
+## [9] &quot;Post&quot;</code></pre>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">rename</span>(d, Salary, AnnualSalary)</span></code></pre></div>
+<pre><code>## Change the following variable names for data frame d :
+## 
+## Salary --&gt; AnnualSalary</code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="fu">names</span>(d)</span></code></pre></div>
+<pre><code>## [1] &quot;Name&quot;         &quot;Years&quot;        &quot;Gender&quot;       &quot;Dept&quot;         &quot;AnnualSalary&quot;
+## [6] &quot;JobSat&quot;       &quot;Plan&quot;         &quot;Pre&quot;          &quot;Post&quot;</code></pre>
+</div>
+<div id="create-factor-variables" class="section level2">
+<h2>Create Factor Variables</h2>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">rd</span>(<span class="st">&quot;Mach4&quot;</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">rd</span>(<span class="st">&quot;Mach4_lbl&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## &gt;&gt;&gt; Suggestions
+## Recommended binary format for data files: feather
+##   Create with Write(d, &quot;your_file&quot;, format=&quot;feather&quot;)
+## More details about your data, Enter:  details()  for d, or  details(name)
+## 
+## Data Types
+## ------------------------------------------------------------
+## character: Non-numeric data values
+## ------------------------------------------------------------
+## 
+##     Variable                  Missing  Unique 
+##         Name     Type  Values  Values  Values   First and last values
+## ------------------------------------------------------------------------------------------
+##  1     label character     20       0      20   Never tell anyone the real reason you did something unless it is useful to do so ... Most people forget more easily the death of a parent than the loss of their property
+## ------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a>LikertCats <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Strongly Disagree&quot;</span>, <span class="st">&quot;Disagree&quot;</span>, <span class="st">&quot;Slightly Disagree&quot;</span>,</span>
+<span id="cb59-2"><a href="#cb59-2" tabindex="-1"></a>                <span class="st">&quot;Slightly Agree&quot;</span>, <span class="st">&quot;Agree&quot;</span>, <span class="st">&quot;Strongly Agree&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">factors</span>(m01<span class="sc">:</span>m20, <span class="at">levels=</span><span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">labels=</span>LikertCats)</span></code></pre></div>
+<p>Convert the specified variables to factors according to the given
+vector of three variables only. Leave the original variables unmodified,
+create new variables.</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">factors</span>(<span class="fu">c</span>(m06, m07, m20), <span class="at">levels=</span><span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">labels=</span>LikertCats, <span class="at">new=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Now copy the variable labels from the original integer variables to
+the newly created factor variables.</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" tabindex="-1"></a>l <span class="ot">&lt;-</span> <span class="fu">factors</span>(<span class="fu">c</span>(m06, m07, m20), <span class="at">var_labels=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="reshape-data" class="section level2">
+<h2>Reshape Data</h2>
+<div id="reshape-data-wide-to-long" class="section level3">
+<h3>Reshape Data Wide to Long</h3>
+<p>A wide-form data table has multiple measurements from the same unit
+of analysis (e.g., person) across the row of data, usually repeated over
+time. The conversion to long-form forms three new columns from the input
+wide-form: the name of the grouping variable, the name of the response
+values, and the name of the ID field.</p>
+<p>Read the data.</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">Read</span>(<span class="st">&quot;Anova_rb&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## &gt;&gt;&gt; Suggestions
+## Recommended binary format for data files: feather
+##   Create with Write(d, &quot;your_file&quot;, format=&quot;feather&quot;)
+## More details about your data, Enter:  details()  for d, or  details(name)
+## 
+## Data Types
+## ------------------------------------------------------------
+## character: Non-numeric data values
+## integer: Numeric data values, integers only
+## ------------------------------------------------------------
+## 
+##     Variable                  Missing  Unique 
+##         Name     Type  Values  Values  Values   First and last values
+## ------------------------------------------------------------------------------------------
+##  1    Person character      7       0       7   p1  p2  p3 ... p5  p6  p7
+##  2      sup1   integer      7       0       4   2  2  8 ... 2  5  2
+##  3      sup2   integer      7       0       5   4  5  6 ... 1  5  3
+##  4      sup3   integer      7       0       5   4  4  7 ... 2  6  2
+##  5      sup4   integer      7       0       6   3  6  9 ... 3  8  4
+## ------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##   Person sup1 sup2 sup3 sup4
+## 1     p1    2    4    4    3
+## 2     p2    2    5    4    6
+## 3     p3    8    6    7    9
+## 4     p4    4    3    5    7
+## 5     p5    2    1    2    3
+## 6     p6    5    5    6    8
+## 7     p7    2    3    2    4</code></pre>
+<p>Go with the default variable names in the long-form.</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a><span class="fu">reshape_long</span>(d, <span class="fu">c</span>(<span class="st">&quot;sup1&quot;</span>, <span class="st">&quot;sup2&quot;</span>, <span class="st">&quot;sup3&quot;</span>, <span class="st">&quot;sup4&quot;</span>))</span></code></pre></div>
+<pre><code>##     ID Person Group Response
+## 1  ID1     p1  sup1        2
+## 2  ID2     p2  sup1        2
+## 3  ID3     p3  sup1        8
+## 4  ID4     p4  sup1        4
+## 5  ID5     p5  sup1        2
+## 6  ID6     p6  sup1        5
+## 7  ID7     p7  sup1        2
+## 8  ID1     p1  sup2        4
+## 9  ID2     p2  sup2        5
+## 10 ID3     p3  sup2        6
+## 11 ID4     p4  sup2        3
+## 12 ID5     p5  sup2        1
+## 13 ID6     p6  sup2        5
+## 14 ID7     p7  sup2        3
+## 15 ID1     p1  sup3        4
+## 16 ID2     p2  sup3        4
+## 17 ID3     p3  sup3        7
+## 18 ID4     p4  sup3        5
+## 19 ID5     p5  sup3        2
+## 20 ID6     p6  sup3        6
+## 21 ID7     p7  sup3        2
+## 22 ID1     p1  sup4        3
+## 23 ID2     p2  sup4        6
+## 24 ID3     p3  sup4        9
+## 25 ID4     p4  sup4        7
+## 26 ID5     p5  sup4        3
+## 27 ID6     p6  sup4        8
+## 28 ID7     p7  sup4        4</code></pre>
+<p>Specify custom variable names in the long-form, take advantage of the
+usual organization that the columns to be transformed are all sequential
+in the data frame. Use the ordering <code>sup1:sup4</code> to identify
+the variables. Only the first two parameter values are required, the
+data frame that contains the variables and the variables to be
+transformed.</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a><span class="fu">reshape_long</span>(d, sup1<span class="sc">:</span>sup4, </span>
+<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a>             <span class="at">group=</span><span class="st">&quot;Supplement&quot;</span>, <span class="at">response=</span><span class="st">&quot;Reps&quot;</span>, <span class="at">ID=</span><span class="st">&quot;Person&quot;</span>, <span class="at">prefix=</span><span class="st">&quot;P&quot;</span>)</span></code></pre></div>
+<pre><code>##    Person Supplement Reps
+## 1     Pp1       sup1    2
+## 2     Pp2       sup1    2
+## 3     Pp3       sup1    8
+## 4     Pp4       sup1    4
+## 5     Pp5       sup1    2
+## 6     Pp6       sup1    5
+## 7     Pp7       sup1    2
+## 8     Pp1       sup2    4
+## 9     Pp2       sup2    5
+## 10    Pp3       sup2    6
+## 11    Pp4       sup2    3
+## 12    Pp5       sup2    1
+## 13    Pp6       sup2    5
+## 14    Pp7       sup2    3
+## 15    Pp1       sup3    4
+## 16    Pp2       sup3    4
+## 17    Pp3       sup3    7
+## 18    Pp4       sup3    5
+## 19    Pp5       sup3    2
+## 20    Pp6       sup3    6
+## 21    Pp7       sup3    2
+## 22    Pp1       sup4    3
+## 23    Pp2       sup4    6
+## 24    Pp3       sup4    9
+## 25    Pp4       sup4    7
+## 26    Pp5       sup4    3
+## 27    Pp6       sup4    8
+## 28    Pp7       sup4    4</code></pre>
+</div>
+<div id="reshape-data-long-to-wide" class="section level3">
+<h3>Reshape Data Long to Wide</h3>
+<p>Can also reshape a long-form data frame to wide-form.</p>
+<p>Here, begin with a wide-form data frame and convert to long-form.</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">Read</span>(<span class="st">&quot;Anova_rb&quot;</span>)</span></code></pre></div>
+<pre><code>## 
+## &gt;&gt;&gt; Suggestions
+## Recommended binary format for data files: feather
+##   Create with Write(d, &quot;your_file&quot;, format=&quot;feather&quot;)
+## More details about your data, Enter:  details()  for d, or  details(name)
+## 
+## Data Types
+## ------------------------------------------------------------
+## character: Non-numeric data values
+## integer: Numeric data values, integers only
+## ------------------------------------------------------------
+## 
+##     Variable                  Missing  Unique 
+##         Name     Type  Values  Values  Values   First and last values
+## ------------------------------------------------------------------------------------------
+##  1    Person character      7       0       7   p1  p2  p3 ... p5  p6  p7
+##  2      sup1   integer      7       0       4   2  2  8 ... 2  5  2
+##  3      sup2   integer      7       0       5   4  5  6 ... 1  5  3
+##  4      sup3   integer      7       0       5   4  4  7 ... 2  6  2
+##  5      sup4   integer      7       0       6   3  6  9 ... 3  8  4
+## ------------------------------------------------------------------------------------------</code></pre>
+<div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" tabindex="-1"></a>d</span></code></pre></div>
+<pre><code>##   Person sup1 sup2 sup3 sup4
+## 1     p1    2    4    4    3
+## 2     p2    2    5    4    6
+## 3     p3    8    6    7    9
+## 4     p4    4    3    5    7
+## 5     p5    2    1    2    3
+## 6     p6    5    5    6    8
+## 7     p7    2    3    2    4</code></pre>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" tabindex="-1"></a>dl <span class="ot">&lt;-</span> <span class="fu">reshape_long</span>(d, sup1<span class="sc">:</span>sup4)  <span class="co"># convert to long-form</span></span>
+<span id="cb75-2"><a href="#cb75-2" tabindex="-1"></a><span class="fu">head</span>(dl)</span></code></pre></div>
+<pre><code>##    ID Person Group Response
+## 1 ID1     p1  sup1        2
+## 2 ID2     p2  sup1        2
+## 3 ID3     p3  sup1        8
+## 4 ID4     p4  sup1        4
+## 5 ID5     p5  sup1        2
+## 6 ID6     p6  sup1        5</code></pre>
+<p>Convert back to wide form.</p>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a><span class="fu">reshape_wide</span>(dl, <span class="at">widen=</span>Group, <span class="at">response=</span>Response, <span class="at">ID=</span>Person)</span></code></pre></div>
+<pre><code>##   Person sup1 sup2 sup3 sup4
+## 1     p1    2    4    4    3
+## 2     p2    2    5    4    6
+## 3     p3    8    6    7    9
+## 4     p4    4    3    5    7
+## 5     p5    2    1    2    3
+## 6     p6    5    5    6    8
+## 7     p7    2    3    2    4</code></pre>
+<p>Here covert with the name of the response prefixed to the column
+names.</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="fu">reshape_wide</span>(dl, <span class="at">widen=</span>Group, <span class="at">response=</span>Response, <span class="at">ID=</span>Person,</span>
+<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a>             <span class="at">prefix=</span><span class="cn">TRUE</span>, <span class="at">sep=</span><span class="st">&quot;.&quot;</span>)</span></code></pre></div>
+<pre><code>##   Person Response.sup1 Response.sup2 Response.sup3 Response.sup4
+## 1     p1             2             4             4             3
+## 2     p2             2             5             4             6
+## 3     p3             8             6             7             9
+## 4     p4             4             3             5             7
+## 5     p5             2             1             2             3
+## 6     p6             5             5             6             8
+## 7     p7             2             3             2             4</code></pre>
+</div>
+<div id="create-training-and-testing-data" class="section level3">
+<h3>Create Training and Testing Data</h3>
+<p>Get the data, the Employee data set.</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="fu">Read</span>(<span class="st">&quot;Employee&quot;</span>, <span class="at">quiet=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>Create four component data frames: out$train_x, out$train_y,
+out$test_x, and out$test_y. Specify the response variable as Salary.</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="#cb82-1" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">train_test</span>(d, Salary)</span>
+<span id="cb82-2"><a href="#cb82-2" tabindex="-1"></a><span class="fu">names</span>(out)</span></code></pre></div>
+<pre><code>## [1] &quot;train_x&quot; &quot;train_y&quot; &quot;test_x&quot;  &quot;test_y&quot;</code></pre>
+<p>Create two component data frames: out<span class="math inline">\(train and out\)</span>test. All the variables in
+the original data frame are included in the component data frames.</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="#cb84-1" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">train_test</span>(d)</span>
+<span id="cb84-2"><a href="#cb84-2" tabindex="-1"></a><span class="fu">names</span>(out)</span></code></pre></div>
+<pre><code>## [1] &quot;train&quot; &quot;test&quot;</code></pre>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
